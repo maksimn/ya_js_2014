@@ -24,9 +24,8 @@ var tripSorter = {
     cards: [], // Список карточек
     setDataToSort: function (input) {
         // Инициализация списка карточек:
-        this.cards.length = input.length;
-        for (var i = 0; i < this.cards.length; i++) {
-            this.cards[i] = JSON.parse(input[i]);
+        for (var i = 0; i < input.length; i++) {
+            this.cards.push(JSON.parse(input[i]));
         }
     },
     // АЛГОРИТМ СОРТИРОВКИ
