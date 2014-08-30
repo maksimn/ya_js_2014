@@ -21,28 +21,28 @@ var input = ['{"from":"Stockholm","to":"New York JFK","type":"flight","No":"SK22
 
 // Сортировщик списка карточек:
 var tripSorter = {
-    cards: undefined, // Список карточек
-    setDataToSort : function (input) {
+    cards: [], // Список карточек
+    setDataToSort: function (input) {
         // Инициализация списка карточек:
-        cards = new Array(input.length);
-        for (var i = 0; i < cards.length; i++) {
-            cards[i] = JSON.parse(input[i]);
+        this.cards.length = input.length;
+        for (var i = 0; i < this.cards.length; i++) {
+            this.cards[i] = JSON.parse(input[i]);
         }
     },
     // АЛГОРИТМ СОРТИРОВКИ
-    sort : function () {
+    sort: function () {
         // В данном алгоритме предполагается отсутствие петель в маршруте и корректность входных данных.
         // Этап 1. Нахождение начального пункта маршрута.
         // Нужно просмотреть список карточек и найти карточку с таким значением свойства from, которое не совпадает 
         // ни с одним значением свойства to ни для одной карточки.
-        for (var i = 0, j = 0; i < cards.length; i++) {
-            for (j = 0; j < cards.length; j++) {
-                if (i != j && cards[i].from == cards[j].to) {
+        for (var i = 0, j = 0; i < this.cards.length; i++) {
+            for (j = 0; j < this.cards.length; j++) {
+                if (i != j && this.cards[i].from == this.cards[j].to) {
                     break;
                 }
             }
-            if (j == cards.length) { // Это значит, что i-тая карточка соответствует началу маршрута. Ее нужно поменять с первой.
-                var t = cards[i]; cards[i] = cards[0]; cards[0] = t;
+            if (j == this.cards.length) { // Это значит, что i-тая карточка соответствует началу маршрута. Ее нужно поменять с первой.
+                this.swap(0, i);
                 break;
             }
         }
@@ -50,28 +50,32 @@ var tripSorter = {
         // Сначала берем значение cards[0].to и ищем его среди cards[1].from ... cards[n-1].from
         // Пусть k - индекс найденного совпадения, тогда меняем 1-й (считаем с нуля) и k-й элементы cards.
         // Проделываем то же для cards[1].to, cards[2].to и т. д. до конца.
-        for (var i = 0, j = 0; i < cards.length - 1; i++) {
-            for (j = i + 1; j < cards.length; j++) {
-                if (cards[i].to == cards[j].from) {
+        for (var i = 0, j = 0; i < this.cards.length - 1; i++) {
+            for (j = i + 1; j < this.cards.length; j++) {
+                if (this.cards[i].to == this.cards[j].from) {
                     break;
                 }
             }
-            var t = cards[i + 1]; cards[i + 1] = cards[j]; cards[j] = t;
+            this.swap(i + 1, j);
         }
         // Конец алгоритма. Сложность алгоритма - O(n^2)
     },
+    // Метод перестановки i-того и j-того элемента массива cards данного объекта.
+    swap : function (i, j) {
+        var t = this.cards[i]; this.cards[i] = this.cards[j]; this.cards[j] = t;
+    },
     // Последнее, что нужно реализовать - возврат словесного описания маршрута (формат выходных данных).
-	// Выходные данные выглядят как предложения естественного языка, специфичные для конкретных видов транспорта.
+    // Выходные данные выглядят как предложения естественного языка, специфичные для конкретных видов транспорта.
     /*
     •	Take train 78A from Madrid to Barcelona. Seat 45B.
     •	Take the airport bus from Barcelona to Gerona Airport. No seat assignment.
     •	From Gerona Airport, take flight SK455 to Stockholm. Gate 45B. Seat 3A. Baggage drop at ticket counter 344.
     •	From Stockholm, take flight SK22 to New York JFK. Gate 22. Seat 7B. Baggage will be automatically transferred from your last leg.
     */
-    getResult : function () {
+    getResult: function () {
         var result = "";
-        for (var i = 0; i < cards.length; i++) {
-            with (cards[i]) {
+        for (var i = 0; i < this.cards.length; i++) {
+            with (this.cards[i]) {
                 if (type == "train") {
                     result += "Take train " + No + " from " + from + " to " + to + ". Seat " + Seat + ".\n";
                 } else if (type == "airport bus") {
@@ -79,8 +83,8 @@ var tripSorter = {
                 } else if (type == "flight") {
                     result += "From " + from + ", take flight " + No + " to " + to + ". Gate " + Gate + ". Seat " + Seat + ". " + description + ".\n";
                 } else {
-                    for (prop in cards[i]) {
-                        result += prop + ": " + cards[i][prop] + ". ";
+                    for (prop in this.cards[i]) {
+                        result += prop + ": " + this.cards[i][prop] + ". ";
                     }
                     result += "\n";
                 }
