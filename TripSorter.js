@@ -34,13 +34,14 @@ var tripSorter = {
         // Этап 1. Нахождение начального пункта маршрута.
         // Нужно просмотреть список карточек и найти карточку с таким значением свойства from, которое не совпадает 
         // ни с одним значением свойства to ни для одной карточки.
-        for (var i = 0, j = 0; i < this.cards.length; i++) {
-            for (j = 0; j < this.cards.length; j++) {
+        var n = this.cards.length; // количество карточек
+        for (var i = 0, j = 0; i < n; i++) {
+            for (j = 0; j < n; j++) {
                 if (i != j && this.cards[i].from == this.cards[j].to) {
                     break;
                 }
             }
-            if (j == this.cards.length) { // Это значит, что i-тая карточка соответствует началу маршрута. Ее нужно поменять с первой.
+            if (j == n) { // Это значит, что i-тая карточка соответствует началу маршрута. Ее нужно поменять с первой.
                 this.swap(0, i);
                 break;
             }
@@ -49,8 +50,8 @@ var tripSorter = {
         // Сначала берем значение cards[0].to и ищем его среди cards[1].from ... cards[n-1].from
         // Пусть k - индекс найденного совпадения, тогда меняем 1-й (считаем с нуля) и k-й элементы cards.
         // Проделываем то же для cards[1].to, cards[2].to и т. д. до конца.
-        for (var i = 0, j = 0; i < this.cards.length - 1; i++) {
-            for (j = i + 1; j < this.cards.length; j++) {
+        for (var i = 0, j = 0; i < n - 1; i++) {
+            for (j = i + 1; j < n; j++) {
                 if (this.cards[i].to == this.cards[j].from) {
                     break;
                 }
@@ -73,7 +74,7 @@ var tripSorter = {
     */
     getResult: function () {
         var result = "";
-        for (var i = 0; i < this.cards.length; i++) {
+        for (var i = 0, n = this.cards.length; i < n; i++) {
             with (this.cards[i]) {
                 if (type == "train") {
                     result += "Take train " + No + " from " + from + " to " + to + ". Seat " + Seat + ".\n";
